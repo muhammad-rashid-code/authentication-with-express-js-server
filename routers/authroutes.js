@@ -12,26 +12,26 @@ const { SALT_ROUNDS, AUTH_SECRET } = process.env;
 const saltRounds = parseInt(SALT_ROUNDS); // default to 10 if not provided
 
 const registerSchema = Joi.object({
-  fullName: Joi.string().alphanum().min(3).max(30).required(),
+  fullName: Joi.string().min(3).max(30).required(),
   email: Joi.string()
     .email({
       minDomainSegments: 2,
       tlds: { allow: ["com", "net"] },
     })
     .required(),
-  password: Joi.string().alphanum().min(3).max(30).required(),
-  city: Joi.string().alphanum().min(3).max(30).required(),
-  country: Joi.string().alphanum().min(3).max(30).required(),
+  password: Joi.string().min(3).max(30).required(),
+  city: Joi.string().min(3).max(30).required(),
+  country: Joi.string().min(3).max(30).required(),
 });
 
 const logInSchema = Joi.object({
   email: Joi.string()
     .email({
       minDomainSegments: 2,
-      tlds: { allow: ["com", "net"] },
+      tlds: { allow: ["com", "net"] }, 
     })
     .required(),
-  password: Joi.string().alphanum().min(3).max(30).required(),
+  password: Joi.string().min(3).max(30).required(),
 });
 
 router.use(express.json());
@@ -40,16 +40,25 @@ router.use(express.json());
 router.post("/register", async (req, res) => {
   const { error, value } = registerSchema.validate(req.body);
 
-  if (error)
-    return sendResponse(res, 400, true, null, error.details[0].message);
+  if (error) {
+    // Send all validation error details in the response
+    return sendResponse(
+      res,
+      400,
+      true,
+      null,
+      error.details.map((e) => e.message).join(", ")
+    );
+  }
 
   try {
     const { fullName, email, password, city, country } = value;
 
     // Find user by email
     const existingUser = await User.findOne({ email });
-    if (existingUser)
+    if (existingUser) {
       return sendResponse(res, 400, true, null, "Email already registered");
+    }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -77,8 +86,8 @@ router.post("/register", async (req, res) => {
     );
   } catch (e) {
     console.error(e);
-    sendResponse(res, 400, true, null, e.message);
+    // Send the error message as a response if an unexpected error occurs
+    sendResponse(res, 500, true, null, e.message);
   }
 });
-
 export default router;
