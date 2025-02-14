@@ -16,7 +16,14 @@ app.get("/", (req, res) => {
   try {
     sendResponse(res, 200, false, { Greeting: "Chalra" }, "Good to GO");
   } catch (e) {
-    sendResponse(res, 400, true, null, "Kuch Tw gerber ha Daya");
+    console.log(e);
+    sendResponse(
+      res,
+      500,
+      true,
+      null,
+      "An unexpected error occurred\n" + e.message
+    );
   }
 });
 
