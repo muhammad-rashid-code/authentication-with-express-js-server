@@ -9,9 +9,15 @@ import router from "./routers/authroutes.js";
 const app = express();
 const { MONGO_URI, PORT } = process.env;
 
+const corsOptions = {
+  origin: "*",
+  methods: ["POST", "GET", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
 app.use(express.json());
 app.use(morgan("common"));
-app.use(cors("*"));
+app.use(cors(corsOptions));
 
 app.use("/auth", router);
 
