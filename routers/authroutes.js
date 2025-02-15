@@ -24,16 +24,6 @@ const registerSchema = Joi.object({
   country: Joi.string().min(3).max(30).required(),
 });
 
-const logInSchema = Joi.object({
-  email: Joi.string()
-    .email({
-      minDomainSegments: 2,
-      tlds: { allow: ["com", "net"] }, 
-    })
-    .required(),
-  password: Joi.string().min(3).max(30).required(),
-});
-
 router.use(express.json());
 
 // Register Route
@@ -90,4 +80,43 @@ router.post("/register", async (req, res) => {
     sendResponse(res, 500, true, null, e.message);
   }
 });
+
+const loginSchema = Joi.object({
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { allow: ["com", "net"] },
+    })
+    .required(),
+  password: Joi.string().min(3).max(30).required(),
+});
+
+router.post("/login", async (req, res) => {
+  const { error, value } = loginSchema.validate(req.body);
+  const { email, password } = value;
+
+  if (error)
+    return sendResponse(res, 400, true, null, error.details[0].message); // Changed to 400 for validation errors
+
+  const user = await User.findOne({ email }).lean();
+
+  if (!user) {
+    return sendResponse(res, 400, true, null, "Invalid email or password"); // Generic error message
+  }
+
+  const isPWDmatched = await bcrypt.compare(password, user.password);
+  if (!isPWDmatched) {
+    return sendResponse(res, 400, true, null, "Invalid email or password"); // Generic error message
+  }
+
+  // Remove password before sending response
+  delete user.password;
+
+  const token = Jwt.sign({ email: user.email }, AUTH_SECRET, {
+    expiresIn: "1h",
+  }); // Only include email in token payload
+
+  sendResponse(res, 200, false, { user, token }, "Login successful"); // Uniform success message
+});
+
 export default router;
