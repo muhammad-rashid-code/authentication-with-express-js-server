@@ -12,6 +12,7 @@ const { SALT_ROUNDS, SECRET_KEY } = process.env;
 // Ensures that required fields like fullname, email, and password are validated properly.
 const registerSchema = Joi.object({
   fullname: Joi.string().min(3).max(30).required(),
+  isGraduate: Joi.boolean().required(),
   email: Joi.string()
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
     .required(),
