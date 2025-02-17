@@ -216,4 +216,9 @@ router.patch("/patchToggle/:id", async (req, res) => {
   }
 });
 
+router.put("/updateUser", (req, res) => {
+  console.log(req?.headers?.authorization, "<=authorization");
+  res.json({ MSG: "Working" });
+});
+
 export default router;
