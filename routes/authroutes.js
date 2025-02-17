@@ -218,7 +218,11 @@ router.patch("/patchToggle/:id", async (req, res) => {
 
 router.put("/updateUser", (req, res) => {
   console.log(req?.headers?.authorization, "<=authorization");
-  res.json({ MSG: "Working" });
+
+  const brearrerToken = req?.headers?.authorization;
+  if (!brearrerToken)
+    return sendResponse(res, 400, true, null, "Token not provided");
+  sendResponse(res, 200, false, null, "Working");
 });
 
 export default router;
