@@ -108,7 +108,7 @@ router.post("/login", async (req, res) => {
     // Handle any errors (e.g., database errors or wrong credentials)
     sendResponse(res, 400, true, null, "Wrong Credentials");
   }
-}); 
+});
 
 // Route to fetch all users ===================================================================================
 // This endpoint retrieves all users from the database.
@@ -214,15 +214,6 @@ router.patch("/patchToggle/:id", async (req, res) => {
     // Handle any errors that occur during the update operation
     sendResponse(res, 400, true, null, "Error: " + error.message);
   }
-});
-
-router.put("/updateUser", (req, res) => {
-  console.log(req?.headers?.authorization, "<=authorization");
-
-  const brearrerToken = req?.headers?.authorization;
-  if (!brearrerToken)
-    return sendResponse(res, 400, true, null, "Token not provided");
-  sendResponse(res, 200, false, null, "Working"); 
 });
 
 export default router;
