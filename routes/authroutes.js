@@ -109,4 +109,13 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get("/allUsers", async (req, res) => {
+  try {
+    const allUsers = await User.find(); // Fetch all users, no need for _id in query
+    sendResponse(res, 200, false, allUsers, "All Users");
+  } catch (error) {
+    sendResponse(res, 400, true, null, "Users not Found");
+  }
+});
+
 export default router;
