@@ -133,9 +133,10 @@ router.patch("/patch/:id", async (req, res) => {
       return sendResponse(res, 404, true, null, "User not found");
     }
 
-    sendResponse(res, 200, false, user, "User set to non-graduate");
+    sendResponse(res, 200, false, user, "User set to graduate");
   } catch (error) {
     sendResponse(res, 400, true, null, "Error: " + error.message);
   }
 });
+
 export default router;
