@@ -108,7 +108,7 @@ router.post("/login", async (req, res) => {
     // Handle any errors (e.g., database errors or wrong credentials)
     sendResponse(res, 400, true, null, "Wrong Credentials");
   }
-});
+}); 
 
 // Route to fetch all users ===================================================================================
 // This endpoint retrieves all users from the database.
@@ -222,7 +222,7 @@ router.put("/updateUser", (req, res) => {
   const brearrerToken = req?.headers?.authorization;
   if (!brearrerToken)
     return sendResponse(res, 400, true, null, "Token not provided");
-  sendResponse(res, 200, false, null, "Working");
+  sendResponse(res, 200, false, null, "Working"); 
 });
 
 export default router;

@@ -27,8 +27,8 @@ mongoose
   .then(() => {
     console.log(" ========== db conn ========== ");
   })
-  .catch(() => {
-    console.log(" ========== db fail ========== ");
+  .catch((error) => {
+    console.log(" ========== db fail ========== \n" + error);
   });
 
 app.listen(PORT, () => {
