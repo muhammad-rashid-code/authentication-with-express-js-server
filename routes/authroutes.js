@@ -119,4 +119,23 @@ router.get("/allUsers", async (req, res) => {
   }
 });
 
+router.patch("/patch/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      id,
+      { isGraduate: true },
+      { new: true, returnDocument: "after" }
+    );
+
+    if (!user) {
+      return sendResponse(res, 404, true, null, "User not found");
+    }
+
+    sendResponse(res, 200, false, user, "User set to non-graduate");
+  } catch (error) {
+    sendResponse(res, 400, true, null, "Error: " + error.message);
+  }
+});
 export default router;
