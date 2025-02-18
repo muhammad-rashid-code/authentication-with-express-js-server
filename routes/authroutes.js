@@ -4,6 +4,7 @@ import sendResponse from "../helpers/sendResponse.js";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import uAuth from "../middleware/userAuth.js";
 
 const router = express.Router();
 const { SALT_ROUNDS, SECRET_KEY } = process.env;
@@ -213,6 +214,21 @@ router.patch("/patchToggle/:id", async (req, res) => {
   } catch (error) {
     // Handle any errors that occur during the update operation
     sendResponse(res, 400, true, null, "Error: " + error.message);
+  }
+});
+
+router.put("/updateUser", uAuth, async (req, res) => {
+  try {
+    const { fullname, city, country } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { fullname, city, country },
+      { new: true }
+    );
+    sendResponse(res, 200, false, user, "User Updated");
+  } catch (e) {
+    sendResponse(res, 400, true, null, "User not Updated\n" + e);
   }
 });
 
