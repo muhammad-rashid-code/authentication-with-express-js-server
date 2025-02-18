@@ -4,6 +4,7 @@ import sendResponse from "../helpers/sendResponse.js";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import authent from "../middlewares/authJwt.js";
 
 const router = express.Router();
 const { SALT_ROUNDS, SECRET_KEY } = process.env;
@@ -94,7 +95,7 @@ router.post("/login", async (req, res) => {
 
     // Create a JWT token for the authenticated user with an expiry time of 1 hour
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id, email: user.email, fullname: user.fullname },
       SECRET_KEY,
       { expiresIn: "1h" }
     );
@@ -213,6 +214,43 @@ router.patch("/patchToggle/:id", async (req, res) => {
   } catch (error) {
     // Handle any errors that occur during the update operation
     sendResponse(res, 400, true, null, "Error: " + error.message);
+  }
+});
+
+// Assuming authent.js is in the same folder
+
+router.put("/updateUser", authent, async (req, res) => {
+  try {
+    // Now you can access the decoded user from the token through req.user
+    const user = req.user; // This is set by the authent middleware
+
+    if (!user) {
+      return sendResponse(res, 403, true, null, "User not found");
+    }
+
+    // Assuming you're updating the fullname, extract it from the request body
+    const { fullname } = req.body;
+
+    if (!fullname) {
+      return sendResponse(res, 400, true, null, "Fullname is required");
+    }
+
+    // Update the user in the database using their ID
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id, // Use the user ID from the authenticated token
+      { fullname }, // Update only the fullname, or add more fields to the update object
+      { new: true } // Return the updated user document
+    );
+
+    // If user not found after update
+    if (!updatedUser) {
+      return sendResponse(res, 404, true, null, "User not found");
+    }
+
+    sendResponse(res, 200, false, updatedUser, "User updated successfully");
+  } catch (error) {
+    console.error(error); // Log the error for debugging purposes
+    sendResponse(res, 500, true, null, "Something went wrong");
   }
 });
 
