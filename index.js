@@ -21,6 +21,7 @@ app.get("/", (req, res) => {
   res.json({ Message: "Server is good to GO" });
 });
 
+
 // db connection
 mongoose
   .connect(MOGO_URI)
