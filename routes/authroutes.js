@@ -4,6 +4,7 @@ import sendResponse from "../helpers/sendResponse.js";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import uAtuh from "../middlewares/authen.js";
 
 const router = express.Router();
 const { SALT_ROUNDS, SECRET_KEY } = process.env;
@@ -213,6 +214,20 @@ router.patch("/patchToggle/:id", async (req, res) => {
   } catch (error) {
     // Handle any errors that occur during the update operation
     sendResponse(res, 400, true, null, "Error: " + error.message);
+  }
+});
+
+router.put("/updateUser", uAtuh, async (req, res) => {
+  const { fullname, city, country } = req.body; // This is where the error comes from.
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user._id, // Use req.user._id which was set by uAtuh middleware
+      { fullname, city, country }, // 'fullname' is being referenced here
+      { new: true }
+    );
+    sendResponse(res, 200, false, user, "User updated");
+  } catch (e) {
+    sendResponse(res, 500, true, null, "Something went wrong\n" + e.message);
   }
 });
 
