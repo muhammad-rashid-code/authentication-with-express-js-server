@@ -216,4 +216,40 @@ router.patch("/patchToggle/:id", async (req, res) => {
   }
 });
 
+router.put("/updateUser", async (req, res) => {
+  console.log(req?.headers?.authorization, "<=authorization");
+
+  try {
+    const bearrer = req?.headers?.authorization;
+    if (!bearrer) {
+      return sendResponse(res, 403, true, null, "Token not Provided");
+    }
+
+    const token = bearrer.split(" ")[1];
+
+    // Check if token exists
+    if (!token) {
+      return sendResponse(res, 403, true, null, "Token format is incorrect");
+    }
+
+    const decoded = jwt.verify(token, SECRET_KEY);
+    if (decoded) {
+      req.user = decoded; // Storing the decoded user information in req.user
+      console.log(decoded); // Consider using a logging library for better logging in production
+    }
+
+    sendResponse(res, 200, false, null, "Working");
+  } catch (e) {
+    console.error("Error:", e);
+    // Specific error handling based on the type of error
+    if (e.name === "JsonWebTokenError") {
+      return sendResponse(res, 401, true, null, "Invalid Token");
+    }
+    if (e.name === "TokenExpiredError") {
+      return sendResponse(res, 401, true, null, "Token Expired");
+    }
+    sendResponse(res, 500, true, null, "Something Went Wrong.");
+  }
+});
+
 export default router;
