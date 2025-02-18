@@ -1,6 +1,7 @@
 import "dotenv/config";
 import sendResponse from "../helpers/sendResponse.js";
 import User from "../models/User.js";
+import jwt from "jsonwebtoken";
 
 export default async function uAuth(req, res, next) {
   try {
