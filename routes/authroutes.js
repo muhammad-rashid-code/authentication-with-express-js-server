@@ -217,19 +217,4 @@ router.patch("/patchToggle/:id", async (req, res) => {
   }
 });
 
-router.put("/updateUser", uAuth, async (req, res) => {
-  try {
-    const { fullname, city, country } = req.body;
-
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { fullname, city, country },
-      { new: true }
-    );
-    sendResponse(res, 200, false, user, "User Updated");
-  } catch (e) {
-    sendResponse(res, 400, true, null, "User not Updated\n" + e);
-  }
-});
-
 export default router;
